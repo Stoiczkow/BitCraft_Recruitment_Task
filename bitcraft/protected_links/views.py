@@ -6,7 +6,8 @@ from django.views.generic.detail import DetailView
 from .models import Links, Files
 import datetime
 from rest_framework.views import APIView
-
+from rest_framework.response import Response
+import json
 
 # Create your views here.
 
@@ -85,11 +86,29 @@ class GetFileView(views.View):
 
 
 class StatsAPIView(APIView):
-    def get(self, request, date):
-        try:
-            Student.objects.get(token=token)
-            verified = True
-        except Student.DoesNotExist:
-            verified = False
-        result = VerifyUserToken(token, verified).to_json()
-        return Response(result, status=status.HTTP_200_OK)
+    """
+    Date in format RRRR-MM-DD.
+    """
+    def get(self, request):
+        result = {}
+        links = Links.objects.filter(entries__gt=0)
+        files = Files.objects.filter(entries__gt=0)
+
+        for link in links:
+            date = link.add_date.date().strftime("%Y-%m-%d")
+            print(date)
+            if date in result:
+                result[date]["links"] += 1
+            else:
+                result[date] = {"links": 1,
+                                "files": 0}
+
+        for file in files:
+            date = file.add_date.date().strftime("%Y-%m-%d")
+            if date in result:
+                result[date]["files"] += 1
+            else:
+                result[date] = {"links": 0,
+                                "files": 1}
+
+        return Response(result)

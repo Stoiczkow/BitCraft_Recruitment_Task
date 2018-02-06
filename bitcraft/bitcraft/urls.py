@@ -28,5 +28,5 @@ urlpatterns = [
     path('get_link/<token>/', GetLinkView.as_view()),
     path('file/<pk>/', FileDetailView.as_view()),
     path('get_file/<token>/', GetFileView.as_view()),
-    path('get_file/<date>/', StatsAPIView.as_view()),
+    path('api/stats/', StatsAPIView.as_view()),
 ]
