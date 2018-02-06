@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, re_path
 from protected_links.views import (HomeView, CreateLink, CreateFile,
                                    LinkDetailView, GetLinkView, FileDetailView,
-                                   GetFileView, StatsAPIView)
+                                   GetFileView, StatsAPIView, AddLinkAPIView,
+                                   AddFileAPIView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,6 @@ urlpatterns = [
     path('file/<pk>/', FileDetailView.as_view()),
     path('get_file/<token>/', GetFileView.as_view()),
     path('api/stats/', StatsAPIView.as_view()),
+    path('api/links/', AddLinkAPIView.as_view()),
+    path('api/files/', AddFileAPIView.as_view()),
 ]

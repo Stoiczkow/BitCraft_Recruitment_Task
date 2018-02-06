@@ -6,7 +6,7 @@ class LinksSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Links
-        fields = ('entries', 'address')
+        fields = ['address']
 
 
 class FilesSerializer(serializers.ModelSerializer):

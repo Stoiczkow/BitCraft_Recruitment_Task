@@ -4,10 +4,12 @@ from django.http import HttpResponse
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from .models import Links, Files
+from .serializers import LinksSerializer, FilesSerializer
 import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
-import json
+from rest_framework import status
+
 
 # Create your views here.
 
@@ -65,7 +67,7 @@ class GetFileView(views.View):
 
         if datetime.datetime.now(
                 datetime.timezone.utc) - file_to_dl.add_date > datetime.timedelta(
-                1):
+            1):
             file_to_dl.is_active = False
             file_to_dl.save()
             return render(request, 'expired.html')
@@ -86,9 +88,6 @@ class GetFileView(views.View):
 
 
 class StatsAPIView(APIView):
-    """
-    Date in format RRRR-MM-DD.
-    """
     def get(self, request):
         result = {}
         links = Links.objects.filter(entries__gt=0)
@@ -96,7 +95,6 @@ class StatsAPIView(APIView):
 
         for link in links:
             date = link.add_date.date().strftime("%Y-%m-%d")
-            print(date)
             if date in result:
                 result[date]["links"] += 1
             else:
@@ -112,3 +110,31 @@ class StatsAPIView(APIView):
                                 "files": 1}
 
         return Response(result)
+
+
+class AddLinkAPIView(APIView):
+    """
+    Needs fixes
+    """
+
+    def post(self, request, format=None):
+        serializer = LinksSerializer(data=request.data)
+        if serializer.is_valid():
+            link = Links.objects.create(address=request.data['address'])
+            link.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AddFileAPIView(APIView):
+    """
+    Needs fixes
+    """
+
+    def post(self, request, format=None):
+        serializer = FilesSerializer(data=request.data)
+        if serializer.is_valid():
+            file = Files.objects.create(file=request.data['file'])
+            file.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
