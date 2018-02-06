@@ -15,11 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from protected_links.views import HomeView, CreateLink
+from protected_links.views import (HomeView, CreateLink, CreateFile,
+                                   LinkDetailView, GetLinkView, FileDetailView,
+                                   GetFileView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/', HomeView.as_view()),
     path('add_link/', CreateLink.as_view(), name='add_link'),
-
+    path('add_file/', CreateFile.as_view(), name='add_file'),
+    path('link/<pk>/', LinkDetailView.as_view()),
+    path('get_link/<token>/', GetLinkView.as_view()),
+    path('file/<pk>/', FileDetailView.as_view()),
+    path('get_file/<token>/', GetFileView.as_view()),
 ]
