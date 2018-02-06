@@ -9,6 +9,7 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
@@ -18,21 +19,21 @@ class HomeView(views.View):
         return render(request, 'base.html')
 
 
-class CreateLink(CreateView):
+class CreateLink(CreateView, LoginRequiredMixin):
     model = Links
     fields = ['address']
 
 
-class CreateFile(CreateView):
+class CreateFile(CreateView, LoginRequiredMixin):
     model = Files
     fields = ['file']
 
 
-class LinkDetailView(DetailView):
+class LinkDetailView(DetailView, LoginRequiredMixin):
     model = Links
 
 
-class GetLinkView(views.View):
+class GetLinkView(views.View, LoginRequiredMixin):
     def get(self, request, token):
         return render(request, 'get_link.html')
 
@@ -54,11 +55,11 @@ class GetLinkView(views.View):
             return render(request, 'invalid_pass.html')
 
 
-class FileDetailView(DetailView):
+class FileDetailView(DetailView, LoginRequiredMixin):
     model = Files
 
 
-class GetFileView(views.View):
+class GetFileView(views.View, LoginRequiredMixin):
     def get(self, request, token):
         return render(request, 'get_file.html')
 
@@ -87,7 +88,7 @@ class GetFileView(views.View):
             return render(request, 'invalid_pass.html')
 
 
-class StatsAPIView(APIView):
+class StatsAPIView(APIView, LoginRequiredMixin):
     def get(self, request):
         result = {}
         links = Links.objects.filter(entries__gt=0)
@@ -112,7 +113,7 @@ class StatsAPIView(APIView):
         return Response(result)
 
 
-class AddLinkAPIView(APIView):
+class AddLinkAPIView(APIView, LoginRequiredMixin):
     """
     Needs fixes
     """
@@ -126,7 +127,7 @@ class AddLinkAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddFileAPIView(APIView):
+class AddFileAPIView(APIView, LoginRequiredMixin):
     """
     Needs fixes
     """
