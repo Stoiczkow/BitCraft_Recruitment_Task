@@ -5,6 +5,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from .models import Links, Files
 import datetime
+from rest_framework.views import APIView
 
 
 # Create your views here.
@@ -81,3 +82,14 @@ class GetFileView(views.View):
             return response
         else:
             return render(request, 'invalid_pass.html')
+
+
+class StatsAPIView(APIView):
+    def get(self, request, date):
+        try:
+            Student.objects.get(token=token)
+            verified = True
+        except Student.DoesNotExist:
+            verified = False
+        result = VerifyUserToken(token, verified).to_json()
+        return Response(result, status=status.HTTP_200_OK)
