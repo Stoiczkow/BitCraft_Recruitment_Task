@@ -15,7 +15,7 @@ class Links(models.Model):
     is_active = models.BooleanField(default=True)
     user_agent = models.CharField(max_length=1000, default='')
 
-    def save(self):
+    def save(self, force_insert=False, using=None):
         if not self.add_date:
             self.token = uuid4().hex
             characters = \
@@ -40,7 +40,7 @@ class Files(models.Model):
     is_active = models.BooleanField(default=True)
     user_agent = models.CharField(max_length=1000, default='')
 
-    def save(self):
+    def save(self, force_insert=False, using=None):
         if not self.add_date:
             self.token = uuid4().hex
             characters = \
