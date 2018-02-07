@@ -9,6 +9,7 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -19,21 +20,21 @@ class HomeView(views.View):
         return render(request, 'base.html')
 
 
-class CreateLink(CreateView, LoginRequiredMixin):
+class CreateLink(LoginRequiredMixin, CreateView):
     model = Links
     fields = ['address']
 
 
-class CreateFile(CreateView, LoginRequiredMixin):
+class CreateFile(LoginRequiredMixin, CreateView):
     model = Files
     fields = ['file']
 
 
-class LinkDetailView(DetailView, LoginRequiredMixin):
+class LinkDetailView(LoginRequiredMixin, DetailView):
     model = Links
 
 
-class GetLinkView(views.View, LoginRequiredMixin):
+class GetLinkView(LoginRequiredMixin, views.View):
     def get(self, request, token):
         return render(request, 'get_link.html')
 
@@ -55,11 +56,11 @@ class GetLinkView(views.View, LoginRequiredMixin):
             return render(request, 'invalid_pass.html')
 
 
-class FileDetailView(DetailView, LoginRequiredMixin):
+class FileDetailView(LoginRequiredMixin, DetailView):
     model = Files
 
 
-class GetFileView(views.View, LoginRequiredMixin):
+class GetFileView(LoginRequiredMixin, views.View):
     def get(self, request, token):
         return render(request, 'get_file.html')
 
@@ -88,7 +89,9 @@ class GetFileView(views.View, LoginRequiredMixin):
             return render(request, 'invalid_pass.html')
 
 
-class StatsAPIView(APIView, LoginRequiredMixin):
+class StatsAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         result = {}
         links = Links.objects.filter(entries__gt=0)
@@ -113,10 +116,11 @@ class StatsAPIView(APIView, LoginRequiredMixin):
         return Response(result)
 
 
-class AddLinkAPIView(APIView, LoginRequiredMixin):
+class AddLinkAPIView(APIView):
     """
     Needs fixes
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         serializer = LinksSerializer(data=request.data)
@@ -127,13 +131,15 @@ class AddLinkAPIView(APIView, LoginRequiredMixin):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AddFileAPIView(APIView, LoginRequiredMixin):
+class AddFileAPIView(APIView):
     """
     Needs fixes
     """
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, format=None):
         serializer = FilesSerializer(data=request.data)
+
         if serializer.is_valid():
             file = Files.objects.create(file=request.data['file'])
             file.save()
